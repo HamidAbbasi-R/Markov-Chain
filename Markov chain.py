@@ -227,7 +227,8 @@ timeframe = 'D1'
 fromNow = True
 endTime = datetime.now()
 Nbars = 10000
-Nstates = 10
+Nstates = 100
+feature = 'log_volatility'
 
 
 if fromNow:
@@ -243,6 +244,7 @@ data = GetPriceData(
     )
 
 #%    MARKOV CHAIN
+data['return'] = data['close'] / data['close'].shift(1) - 1
 data['log_return'] = np.log(data['close'] / data['close'].shift(1))
 data['EMA_log_return'] = data['log_return'].ewm(span=20, adjust=False).mean()
 data['volatility'] = data['log_return'].rolling(20).std()
@@ -250,20 +252,20 @@ data['EMA_volatility'] = data['volatility'].ewm(span=20, adjust=False).mean()
 data['log_volatility'] = np.log(data['volatility'])
 data['EMA_log_volatility'] = data['log_volatility'].ewm(span=20, adjust=False).mean()
 
-feature = data['log_return'].to_numpy()   # convert to numpy array
-# find the 5% and 95% percentiles
-p0 = np.nanmin(feature)
-p1 = np.nanmax(feature)
+feature_array = data[feature].to_numpy()   # convert to numpy array
+
+p0 = np.nanmin(feature_array)
+p1 = np.nanmax(feature_array)
 
 # calculate the thresholds for each state based on Nstates and pctChangeState
-thds = np.zeros(Nstates*2+3)
-thds = np.linspace(p0, p1, Nstates*2+3)
+thds = np.zeros(Nstates)
+thds = np.linspace(p0, p1, Nstates)
 
 groups = np.zeros(len(data['close']))
 
 for i in range(1, len(data)):
     for j in range(1, len(thds)):
-        if feature[i] > thds[j-1] and feature[i] <= thds[j]:
+        if feature_array[i] > thds[j-1] and feature_array[i] <= thds[j]:
             groups[i] = j  # state 0 is the first state
             break
 
@@ -272,7 +274,7 @@ groups = groups[1:]
 groups = groups.astype(int)
 
 # calculate the probabilities of transition from one state to another
-transitions = np.zeros((Nstates*2+2, Nstates*2+2))
+transitions = np.zeros((Nstates-1, Nstates-1))
 for i in range(1, len(groups)):
     transitions[groups[i-1]-1, groups[i]-1] += 1
 
@@ -291,9 +293,10 @@ fig.add_trace(go.Heatmap(
     y=y,    
     z=transitions,
     colorscale='Viridis',
+    colorbar=dict(title='log(Count)'),
 ))
 fig.update_layout(
-    title = 'Transition matrix',
+    title = f'Transition matrix for {symbol} based on {timeframe} data and {feature}',
     xaxis_title = 'From State',
     yaxis_title = 'To State',
     template = 'seaborn',
@@ -305,7 +308,7 @@ fig.add_trace(go.Scatter(
     x=x,
     y=x,
     mode='lines',
-    line=dict(color='black', width=1),
+    line=dict(color='black', width=1, dash='dash'),
     name='y=x',
 ))
 
