@@ -1,3 +1,4 @@
 plotly
 metatrader5==5.0.4803
+yfinance
 pandas_ta

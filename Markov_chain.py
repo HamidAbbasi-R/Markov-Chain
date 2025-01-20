@@ -13,7 +13,7 @@ import plotly.express as px
 # import plotly.io as pio
 # pio.renderers.default = 'vscode'
 
-mt5.initialize()
+# mt5.initialize()
 
 def GetPriceData(
         symbol, 
@@ -242,7 +242,8 @@ data = GetPriceData(
     endTime = endTime, 
     timeframe = timeframe, 
     Nbars = Nbars, 
-    source='MT5',
+    # source='MT5',
+    source='yfinance',
     )
 
 #%    MARKOV CHAIN
