@@ -5,6 +5,7 @@ import pandas_ta as ta
 import MetaTrader5 as mt5
 import numpy as np
 from datetime import datetime
+import streamlit as st
 # import pandas_ta as ta
 import plotly.graph_objects as go
 import plotly.express as px
@@ -221,14 +222,15 @@ def get_start_time(
 
     return startTime
 
-
-symbol = 'EURUSD'
-timeframe = 'D1' 
-fromNow = True
+with st.sidebar:
+    st.title('Inputs')
+    symbol = st.text_input('Symbol (for stocks add .US to the end eg. TSLA.US)', 'EURUSD')
+    timeframe = st.select_slider('Timeframe', options=['M1', 'M5', 'M15', 'M30', 'H1', 'H4', 'D1'], value='D1')
+    fromNow = st.checkbox('From now', value=True)
+    Nbars = st.slider('Number of bars', 1000, 100000, 10000)
+    Nstates = st.slider('Number of states', 5, 100, 50)
+    feature = st.selectbox('Feature', ['log_return', 'EMA_log_return', 'volatility', 'EMA_volatility', 'log_volatility', 'EMA_log_volatility'])
 endTime = datetime.now()
-Nbars = 10000
-Nstates = 100
-feature = 'log_volatility'
 
 
 if fromNow:
@@ -323,4 +325,7 @@ fig.update_yaxes(
     zerolinecolor = 'Black',
 )
 
-fig.show()
+# fig.show()
+st.title('Markov Chain')
+st.write(f'Transition matrix for {symbol} based on {timeframe} data and {feature}')
+st.plotly_chart(fig)

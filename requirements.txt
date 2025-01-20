@@ -1,0 +1,3 @@
+plotly
+MetaTrader5
+pandas_ta
