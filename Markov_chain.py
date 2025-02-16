@@ -1,11 +1,9 @@
 #%%
 from datetime import datetime
-import pandas as pd
-import pandas_ta as ta
 import numpy as np
-from datetime import datetime
 import streamlit as st
 import plotly.graph_objects as go
+import yfinance as yf
 
 def GetPriceData_Yfinance(
         symbol, 
@@ -13,7 +11,6 @@ def GetPriceData_Yfinance(
         end_time, 
         timeframe,
         ):
-    import yfinance as yf
     OHLC = yf.Ticker(symbol).history(
         # [1m, 2m, 5m, 15m, 30m, 60m, 90m, 1h, 1d, 5d, 1wk, 1mo, 3mo]
         interval=timeframe,
