@@ -23,9 +23,9 @@ def GetPriceData_Yfinance(
 with st.sidebar:
     st.title('Inputs')
     symbol = st.text_input('Symbol', 'MSFT')
-    start_time = st.date_input('Start time', datetime(2024, 1, 1))
+    start_time = st.date_input('Start time', datetime(2000, 1, 1))
     end_time = st.date_input('End time', datetime.now())
-    timeframe = st.select_slider('Timeframe', options=['1m', '5m', '15m', '30m', '1h', '1d'], value='1h')
+    timeframe = st.select_slider('Timeframe', options=['1m', '5m', '15m', '30m', '1h', '1d'], value='1d')
     Nstates = st.slider('Number of states', 5, 100, 50)
     feature = st.selectbox('Feature', ['log_return', 'EMA_log_return', 'volatility', 'EMA_volatility', 'log_volatility', 'EMA_log_volatility'])
 endTime = datetime.now()
