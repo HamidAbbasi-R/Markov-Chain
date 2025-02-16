@@ -27,8 +27,17 @@ with st.sidebar:
     end_time = st.date_input('End time', datetime.now())
     timeframe = st.select_slider('Timeframe', options=['1m', '5m', '15m', '30m', '1h', '1d'], value='1d')
     Nstates = st.slider('Number of states', 5, 100, 50)
-    feature = st.selectbox('Feature', ['log_return', 'EMA_log_return', 'volatility', 'EMA_volatility', 'log_volatility', 'EMA_log_volatility'])
+    feature = st.selectbox('Feature', ['Return', 'ln(Return)', 'EMA(ln(Return))', 'Volatility', 'EMA(Volatility)', 'ln(Volatility)', 'EMA(ln(Volatility))'])
 endTime = datetime.now()
+
+# map feature to correct name
+if   feature == 'Return': feature = 'return'
+elif feature == 'ln(Return)': feature = 'log_return'
+elif feature == 'EMA(ln(Return))': feature = 'EMA_log_return'
+elif feature == 'Volatility': feature = 'volatility'
+elif feature == 'EMA(Volatility)': feature = 'EMA_volatility'
+elif feature == 'ln(Volatility)': feature = 'log_volatility'
+elif feature == 'EMA(ln(Volatility))': feature = 'EMA_log_volatility'
 
 #%    GET PRICE DATA
 data = GetPriceData_Yfinance(
